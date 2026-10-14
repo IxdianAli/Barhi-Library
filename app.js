@@ -99,7 +99,7 @@ function getImageUrl(value) {
 function renderDonations(records) {
   const list = document.querySelector("#donation-list");
   const recent = records
-    .filter((record) => getField(record, "title", "book title", "book") || getField(record, "donor", "donated by"))
+    .filter((record) => getField(record, "book name", "title", "book title", "book") || getField(record, "donor name", "donor", "donated by"))
     .sort((first, second) => {
       const firstDate = parseInventoryDate(getField(first, "date", "donation date"))?.getTime() || 0;
       const secondDate = parseInventoryDate(getField(second, "date", "donation date"))?.getTime() || 0;
@@ -113,8 +113,8 @@ function renderDonations(records) {
   }
 
   list.innerHTML = recent.map((record) => {
-    const title = getField(record, "title", "book title", "book") || "Book donation";
-    const donor = getField(record, "donor", "donated by") || "Community donor";
+    const title = getField(record, "book name", "title", "book title", "book") || "Book donation";
+    const donor = getField(record, "donor name", "donor", "donated by") || "Community donor";
     const parsedDate = parseInventoryDate(getField(record, "date", "donation date"));
     const image = getImageUrl(getField(record, "image url", "image", "photo url", "photo"));
     const date = parsedDate
@@ -145,7 +145,7 @@ async function loadInventory() {
       if (!raw) return 1;
       const value = Number(raw.replace(/,/g, ""));
       if (!Number.isFinite(value) || value < 0) {
-        const title = getField(record, "title", "book title", "book") || "Untitled book";
+        const title = getField(record, "book name", "title", "book title", "book") || "Untitled book";
         throw new Error(`Invalid quantity for "${title}" in the inventory sheet.`);
       }
       return value;
@@ -153,7 +153,7 @@ async function loadInventory() {
     const total = quantities.reduce((sum, quantity) => sum + quantity, 0);
 
     count.textContent = new Intl.NumberFormat("en-IN").format(total);
-    countStatus.textContent = "Books recorded in the shared inventory";
+    countStatus.textContent = `Copies across ${records.length} inventory entries`;
     renderDonations(records);
   } catch (cause) {
     error.hidden = false;
