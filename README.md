@@ -12,6 +12,8 @@ Use one Google Sheets spreadsheet with two tabs named `Books` and `Donations`. A
 4. In `site-config.js`, set `spreadsheetUrl` to the regular Google Sheets URL ending in `/edit`, `booksCsvUrl` to the published `Books` CSV URL, and `donationsCsvUrl` to the published `Donations` CSV URL. `spreadsheetUrl` is only the visitor-facing link to the workbook; it is not a CSV feed.
 5. Replace sample data before publishing. Keep private information out of a publicly published spreadsheet.
 
+The book catalogue shows the first seven matching entries initially. Visitors can select **View more books** to show all matching entries; starting a new search returns the results to the initial seven.
+
 Example configuration (replace each placeholder by copying the matching link from Google Sheets):
 
 ```js

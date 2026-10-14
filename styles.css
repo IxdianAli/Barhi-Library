@@ -105,6 +105,7 @@ h1, h2, h3, p { margin-top: 0; }
 .book-table td { color: #606157; line-height: 1.5; }
 .book-table td:first-child { color: var(--ink); font-weight: 700; }
 .book-table tbody tr:last-child td { border-bottom: 0; }
+.view-more-books { margin-top: 18px; cursor: pointer; }
 [hidden] { display: none !important; }
 
 .about { padding-top: 88px; padding-bottom: 93px; background: #eeefe7; display: grid; grid-template-columns: .92fr 1fr; align-items: center; gap: 10%; }

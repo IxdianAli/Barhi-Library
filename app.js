@@ -1,5 +1,7 @@
 const config = window.BARHI_LIBRARY_CONFIG || {};
 let inventoryRecords = [];
+let showAllBooks = false;
+const INITIAL_BOOK_LIMIT = 7;
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
@@ -142,9 +144,12 @@ function renderBookList(records) {
   const emptyMessage = document.querySelector("#book-list-empty");
   const resultsCount = document.querySelector("#book-results-count");
   const body = document.querySelector("#book-list-body");
+  const viewMoreButton = document.querySelector("#view-more-books");
 
   tableWrap.hidden = false;
-  resultsCount.textContent = `Showing ${matchingBooks.length} of ${books.length} books`;
+  const visibleBooks = showAllBooks ? matchingBooks : matchingBooks.slice(0, INITIAL_BOOK_LIMIT);
+  resultsCount.textContent = `Showing ${visibleBooks.length} of ${matchingBooks.length} matching books`;
+  viewMoreButton.hidden = matchingBooks.length <= INITIAL_BOOK_LIMIT || showAllBooks;
   if (matchingBooks.length === 0) {
     body.replaceChildren();
     emptyMessage.hidden = false;
@@ -155,7 +160,7 @@ function renderBookList(records) {
   }
 
   emptyMessage.hidden = true;
-  body.innerHTML = matchingBooks.map((record) => {
+  body.innerHTML = visibleBooks.map((record) => {
     const values = [
       getField(record, "book name", "title", "book title", "book"),
       getField(record, "author"),
@@ -247,7 +252,15 @@ async function loadInventory() {
   }
 }
 
-document.querySelector("#book-search").addEventListener("input", () => renderBookList(inventoryRecords));
+document.querySelector("#book-search").addEventListener("input", () => {
+  showAllBooks = false;
+  renderBookList(inventoryRecords);
+});
+
+document.querySelector("#view-more-books").addEventListener("click", () => {
+  showAllBooks = true;
+  renderBookList(inventoryRecords);
+});
 
 const menuToggle = document.querySelector(".menu-toggle");
 menuToggle.addEventListener("click", () => {
