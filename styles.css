@@ -88,6 +88,24 @@ h1, h2, h3, p { margin-top: 0; }
 .collection-foot { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; color: #85867b; font-size: 9px; }
 .collection-foot strong { color: #5c5e54; font-weight: 600; }
 .collection-foot .text-link { font-size: 10px; }
+.book-catalog { margin-top: 71px; padding-top: 36px; border-top: 1px solid var(--line); }
+.catalog-heading h3 { margin: 8px 0 0; font: 600 29px/1.2 var(--serif); letter-spacing: -.6px; }
+.catalog-description { margin: 11px 0 25px; color: var(--muted); font-size: 11px; }
+.book-search-label { display: block; margin-bottom: 8px; color: #64665c; font-size: 10px; font-weight: 700; }
+.book-search-row { display: flex; align-items: center; gap: 18px; }
+.book-search-row input { width: min(100%, 490px); min-height: 44px; padding: 0 13px; border: 1px solid #deddd4; border-radius: 2px; background: #fff; color: var(--ink); font: 11px var(--sans); }
+.book-search-row input::placeholder { color: #96968c; }
+.book-search-row input:focus-visible { border-color: var(--green); outline: 2px solid rgba(82,103,77,.2); outline-offset: 1px; }
+.book-results-count { color: #85867b; font-size: 10px; }
+.book-list-empty { margin: 19px 0 0; padding: 18px; border: 1px solid #ebe9e1; background: #fff; color: #77776d; font-size: 11px; line-height: 1.7; }
+.book-table-wrap { margin-top: 18px; overflow-x: auto; border: 1px solid #e8e6de; background: #fff; }
+.book-table { width: 100%; border-collapse: collapse; text-align: left; }
+.book-table th, .book-table td { padding: 15px 17px; border-bottom: 1px solid #eeede7; font-size: 10px; }
+.book-table th { background: #f1f2ec; color: #64685d; font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.book-table td { color: #606157; line-height: 1.5; }
+.book-table td:first-child { color: var(--ink); font-weight: 700; }
+.book-table tbody tr:last-child td { border-bottom: 0; }
+[hidden] { display: none !important; }
 
 .about { padding-top: 88px; padding-bottom: 93px; background: #eeefe7; display: grid; grid-template-columns: .92fr 1fr; align-items: center; gap: 10%; }
 .about-art { min-height: 344px; padding: 36px 37px 0; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; background: #dfe5d6; }
@@ -201,6 +219,13 @@ h1, h2, h3, p { margin-top: 0; }
   .donation-item { grid-template-columns: 34px 1fr; gap: 10px; padding: 6px 0; }
   .donation-item time { display: none; }
   .collection-foot { align-items: flex-start; gap: 15px; }
+  .book-catalog { margin-top: 54px; padding-top: 28px; }
+  .catalog-heading h3 { font-size: 26px; }
+  .catalog-description { margin-bottom: 21px; }
+  .book-search-row { align-items: flex-start; flex-direction: column; gap: 9px; }
+  .book-search-row input { width: 100%; }
+  .book-table { min-width: 640px; }
+  .book-table th, .book-table td { padding: 13px 14px; }
   .about { padding-top: 57px; padding-bottom: 66px; grid-template-columns: 1fr; gap: 33px; }
   .about-art { min-height: 290px; padding: 27px 28px 0; }
   .about-quote { font-size: 22px; }

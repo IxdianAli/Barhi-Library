@@ -105,6 +105,24 @@
           </div>
         </div>
         <div class="collection-foot"><span>Example inventory date: <strong>14 October 2026</strong></span><a class="text-link" href="books-template.csv" download>Download example CSV <span aria-hidden="true">↓</span></a><a id="sheet-link" class="text-link" href="https://www.facebook.com/profile.php?id=100090850820826" target="_blank" rel="noopener noreferrer">Stay up to date <span aria-hidden="true">↗</span></a></div>
+        <div class="book-catalog" id="book-list">
+          <div class="catalog-heading">
+            <div><span class="eyebrow">BROWSE THE SHELVES</span><h3>Our book list</h3></div>
+          </div>
+          <p class="catalog-description">Search books by name, author, language, donor or edition.</p>
+          <label class="book-search-label" for="book-search">Search the collection</label>
+          <div class="book-search-row">
+            <input id="book-search" type="search" placeholder="Try a book name, author, language or donor…" autocomplete="off">
+            <span id="book-results-count" class="book-results-count" aria-live="polite">Connect the published Books tab to browse books</span>
+          </div>
+          <p id="book-list-empty" class="book-list-empty">The book list will appear here when the Books tab is published.</p>
+          <div id="book-table-wrap" class="book-table-wrap" hidden>
+            <table class="book-table">
+              <thead><tr><th scope="col">Book name</th><th scope="col">Author</th><th scope="col">Language</th><th scope="col">Donor name</th><th scope="col">Edition</th></tr></thead>
+              <tbody id="book-list-body"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section class="about section" id="about">

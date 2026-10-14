@@ -1,4 +1,5 @@
 const config = window.BARHI_LIBRARY_CONFIG || {};
+let inventoryRecords = [];
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
@@ -127,19 +128,91 @@ function renderDonations(records) {
   }).join("");
 }
 
+function renderBookList(records) {
+  const search = document.querySelector("#book-search").value.trim().toLowerCase();
+  const books = records.filter((record) => getField(record, "book name", "title", "book title", "book"));
+  const matchingBooks = books.filter((record) => [
+    getField(record, "book name", "title", "book title", "book"),
+    getField(record, "author"),
+    getField(record, "language"),
+    getField(record, "donor name", "donor", "donated by"),
+    getField(record, "edition")
+  ].join(" ").toLowerCase().includes(search));
+  const tableWrap = document.querySelector("#book-table-wrap");
+  const emptyMessage = document.querySelector("#book-list-empty");
+  const resultsCount = document.querySelector("#book-results-count");
+  const body = document.querySelector("#book-list-body");
+
+  tableWrap.hidden = false;
+  resultsCount.textContent = `Showing ${matchingBooks.length} of ${books.length} books`;
+  if (matchingBooks.length === 0) {
+    body.replaceChildren();
+    emptyMessage.hidden = false;
+    emptyMessage.textContent = books.length
+      ? "No books match your search. Try another title, author, language or donor."
+      : "No book entries found. Add books to the Books tab to see them here.";
+    return;
+  }
+
+  emptyMessage.hidden = true;
+  body.innerHTML = matchingBooks.map((record) => {
+    const values = [
+      getField(record, "book name", "title", "book title", "book"),
+      getField(record, "author"),
+      getField(record, "language"),
+      getField(record, "donor name", "donor", "donated by"),
+      getField(record, "edition")
+    ];
+    return `<tr>${values.map((value) => `<td>${escapeHtml(value || "—")}</td>`).join("")}</tr>`;
+  }).join("");
+}
+
+function isDriveFilePreviewUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.hostname === "drive.google.com" && /^\/file\/d\/[^/]+\/view/.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
+function setInventoryError(message) {
+  const error = document.querySelector("#sheet-error");
+  error.hidden = false;
+  error.textContent = message;
+}
+
+async function fetchSheetCsv(url, tabName) {
+  if (isDriveFilePreviewUrl(url)) {
+    throw new Error(`The ${tabName} URL is a Google Drive file preview, not a published CSV. Open the spreadsheet in Google Sheets and publish the ${tabName} tab as CSV.`);
+  }
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${tabName} CSV request failed (${response.status}).`);
+  const text = await response.text();
+  if (/^\s*(<!doctype\s+html|<html|<head|<body)/i.test(text)) {
+    throw new Error(`The ${tabName} URL returned a web page instead of CSV. Publish the ${tabName} tab as CSV and use its published link.`);
+  }
+
+  const records = parseCsv(text);
+  if (records.length === 0) throw new Error(`The published ${tabName} tab is empty or is not a valid CSV.`);
+  return records;
+}
+
 async function loadInventory() {
   const count = document.querySelector("#book-count");
   const countStatus = document.querySelector("#count-status");
-  const error = document.querySelector("#sheet-error");
   const sheetLink = document.querySelector("#sheet-link");
 
   if (config.spreadsheetUrl) sheetLink.href = config.spreadsheetUrl;
-  if (!config.inventoryCsvUrl) return;
+  const booksUrl = config.booksCsvUrl || config.inventoryCsvUrl;
+  if (!booksUrl) {
+    setInventoryError("Connect the published Books CSV URL in site-config.js to display the current book count and catalogue.");
+    return;
+  }
 
   try {
-    const response = await fetch(config.inventoryCsvUrl, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Inventory request failed (${response.status}).`);
-    const records = parseCsv(await response.text());
+    const records = await fetchSheetCsv(booksUrl, "Books");
     const quantities = records.map((record) => {
       const raw = getField(record, "quantity", "copies", "count");
       if (!raw) return 1;
@@ -154,13 +227,27 @@ async function loadInventory() {
 
     count.textContent = new Intl.NumberFormat("en-IN").format(total);
     countStatus.textContent = `Copies across ${records.length} inventory entries`;
-    renderDonations(records);
+    inventoryRecords = records;
+    renderBookList(records);
+
+    if (config.donationsCsvUrl) {
+      try {
+        renderDonations(await fetchSheetCsv(config.donationsCsvUrl, "Donations"));
+      } catch (cause) {
+        renderDonations([]);
+        setInventoryError(`${cause.message} The book count and catalogue loaded successfully.`);
+        console.error("Unable to load Barhi Library donations:", cause);
+      }
+    } else {
+      renderDonations(records);
+    }
   } catch (cause) {
-    error.hidden = false;
-    error.textContent = "The shared inventory could not be loaded. Please try again later or visit our Facebook page for updates.";
+    setInventoryError(`${cause.message} Check that the tab is published to the web as CSV and the link is correct.`);
     console.error("Unable to load Barhi Library inventory:", cause);
   }
 }
+
+document.querySelector("#book-search").addEventListener("input", () => renderBookList(inventoryRecords));
 
 const menuToggle = document.querySelector(".menu-toggle");
 menuToggle.addEventListener("click", () => {
